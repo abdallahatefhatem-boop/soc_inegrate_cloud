@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alerts · Sentinel SOC</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#22223b;--ink2:#2d2e4b;--plum:#4a4e69;--mau:#9a8c98;--rose:#c9ada7;--pap:#f2e9e4;
+--critical:#ff6a4d;--high:#f0a35e;--medium:#ecd27a;--low:#8dc0ad;--info:#9a8c98;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+:root[data-theme=light]{--ink:#f2e9e4;--ink2:#e7d8d1;--plum:#c9ada7;--mau:#4a4e69;--rose:#7a5a62;--pap:#22223b;color-scheme:light}
+*{box-sizing:border-box}html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--ink);color:var(--pap);font:14px/1.5 "Hanken Grotesk",system-ui,sans-serif;display:flex;transition:background .35s,color .35s}
+button,select,input{font:inherit;color:inherit}:focus-visible{outline:2px solid var(--rose);outline-offset:3px}a{color:inherit;text-decoration:none}
+.d{font-family:"Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif}
+aside.nv{width:220px;flex:none;background:var(--ink2);padding:24px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;transition:background .35s}
+.brand{font-size:22px;font-weight:800;letter-spacing:-.02em;padding:0 12px 24px}.brand i{font-style:normal;color:var(--rose)}
+.nv a.t{padding:10px 12px;border-radius:12px;color:var(--mau);transition:.2s}.nv a.t:hover{color:var(--pap);transform:translateX(4px)}.nv a.t.a{background:var(--pap);color:var(--ink);font-weight:600}
+.ft{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.lv{display:flex;gap:8px;align-items:center;background:none;border:1px solid var(--plum);border-radius:99px;padding:9px 14px;cursor:pointer;color:var(--mau)}
+.lv i{width:8px;height:8px;border-radius:50%;background:var(--mau)}.lv.on{color:var(--pap)}.lv.on i{background:var(--critical);animation:pu 1.2s infinite}
+@keyframes pu{50%{box-shadow:0 0 0 6px #ff6a4d33}}
+main{flex:1;min-width:0;padding:28px 32px 48px;display:flex;flex-direction:column;gap:28px}
+.top h1{font-size:38px;margin:0;letter-spacing:-.03em;line-height:1}.top p{margin:6px 0 0;color:var(--mau)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{background:var(--ink2);border:1px solid var(--plum);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;transition:transform .2s,background .35s}.kpi:hover{transform:translateY(-3px)}
+.kh{display:flex;align-items:center;gap:10px;color:var(--mau);font-weight:500}
+.ic{width:34px;height:34px;border-radius:10px;background:var(--ink);display:grid;place-items:center;color:var(--rose)}.ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kv{font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1.05}
+.kf{display:flex;align-items:center;justify-content:space-between;gap:8px}.kf small{color:var(--mau)}
+.dl{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid var(--plum);display:inline-flex;gap:4px;white-space:nowrap}.dl.bad b{color:var(--critical)}.dl.good b{color:var(--low)}
+.sp{width:92px;height:30px;flex:none}.sp polyline{fill:none;stroke:var(--rose);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:300;stroke-dashoffset:300;animation:dr 1.4s .4s forwards}
+.g{display:grid;grid-template-columns:repeat(12,1fr);gap:36px 32px}.c8{grid-column:span 8}.c4{grid-column:span 4}.c12{grid-column:span 12}
+h2{font-size:15px;font-weight:600;margin:0 0 14px;color:var(--rose)}
+.ch{position:relative}.ch svg{display:block;width:100%}.ch .ln{stroke-dasharray:1400;stroke-dashoffset:1400;animation:dr 1.8s .3s forwards}.ch .ar{opacity:0;animation:fd 1s 1.2s forwards}
+@keyframes dr{to{stroke-dashoffset:0}}@keyframes fd{to{opacity:1}}
+.tip{position:absolute;pointer-events:none;background:var(--pap);color:var(--ink);padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;opacity:0;transform:translate(-50%,-140%);transition:opacity .15s;white-space:nowrap}
+.dn{display:flex;gap:22px;align-items:center;flex-wrap:wrap}.ring{width:150px;height:150px;border-radius:50%;flex:none;-webkit-mask:radial-gradient(circle 46px,transparent 98%,#000 100%);mask:radial-gradient(circle 46px,transparent 98%,#000 100%);animation:sp 1.2s cubic-bezier(.2,.9,.2,1)}
+@keyframes sp{from{transform:rotate(-120deg) scale(.6);opacity:0}}
+.lg{display:grid;gap:5px;font-size:13px;flex:1;min-width:130px}.lg div{display:flex;justify-content:space-between;gap:10px}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}
+.tb{display:grid;grid-template-columns:140px 1fr 24px;gap:10px;align-items:center;margin:9px 0;font-size:13px}.tb div{height:8px;background:var(--ink2);border-radius:4px}
+.tb i{display:block;height:100%;background:var(--rose);border-radius:4px;transform-origin:left;animation:gr .9s .3s backwards}@keyframes gr{from{transform:scaleX(0)}}
+.rl{display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--plum)}.rl b{margin-left:auto}
+.bd{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;color:#22223b;padding:2px 10px;border-radius:99px}
+.s-critical{background:var(--critical)}.s-high{background:var(--high)}.s-medium{background:var(--medium)}.s-low{background:var(--low)}.s-info{background:var(--mau)}
+.pl{font-size:12px;color:var(--mau);border:1px solid var(--plum);border-radius:99px;padding:1px 10px;white-space:nowrap}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--mau);font-weight:500;font-size:13px;padding:8px 12px}
+td{padding:12px;border-top:1px solid var(--plum)}tbody tr{cursor:pointer;transition:.15s}tbody tr:hover{background:var(--ink2);transform:translateX(6px)}tr.nw{animation:in .6s}@keyframes in{from{opacity:0;background:#c9ada744}}
+.fil{display:flex;gap:10px;flex-wrap:wrap}select,input[type=search]{background:var(--ink2);border:1px solid var(--plum);border-radius:99px;padding:9px 16px}input[type=search]{min-width:240px}
+.tl{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.tc{display:block;padding:20px;border-radius:18px 18px 18px 4px;background:var(--ink2);border:1px solid var(--plum);transition:transform .2s;animation:in .5s backwards}.tc:hover{transform:translateY(-4px)}
+.tc b{display:block;font-size:46px;line-height:1;margin:6px 0 12px}.tc .mx{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--ink);margin-bottom:12px}.tc .mx i{display:block}
+.chip{display:inline-block;font-size:12px;border:1px solid var(--plum);border-radius:99px;padding:1px 9px;margin:0 4px 4px 0;color:var(--mau)}
+#dr{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--pap);color:var(--ink);padding:26px;overflow:auto;transform:translateX(105%);transition:transform .45s cubic-bezier(.2,.9,.2,1);z-index:5;border-radius:28px 0 0 28px}
+#dr.open{transform:none}#dr h3{font-size:26px;line-height:1.1;margin:16px 0 10px;letter-spacing:-.02em}
+dl{display:grid;grid-template-columns:105px 1fr;gap:8px 12px;margin:18px 0}dt{color:var(--plum)}dd{margin:0;font-weight:500}
+.btn{border:2px solid var(--ink);background:none;color:var(--ink);border-radius:99px;padding:9px 18px;cursor:pointer;font-weight:600;transition:transform .15s}.btn:hover{transform:translateY(-2px)}.btn.p{background:var(--ink);color:var(--pap)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,30px);background:var(--pap);color:var(--ink);padding:12px 22px;border-radius:99px;font-weight:600;opacity:0;transition:.3s;z-index:9;pointer-events:none}#toast.s{opacity:1;transform:translate(-50%,0)}
+body.na *{animation:none!important}
+@media(max-width:980px){body{flex-direction:column}aside.nv{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px 16px}.brand{padding:0 12px 0 0}.ft{margin:0 0 0 auto;flex-direction:row}.kpis{grid-template-columns:1fr 1fr}.c8,.c4{grid-column:span 12}main{padding:20px 16px 40px}}
+@media(max-width:560px){.kpis{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.ch .ln,.sp polyline{stroke-dashoffset:0}.ch .ar{opacity:1}}
+</style>
+</head>
+<body>
+<aside class="nv"><a class="brand d" href="index.html" style="display:block">Sentinel<i>SOC</i></a><a class="t" href="light-mode.html">Dashboard</a><a class="t a" href="alerts-light.html">Alerts</a><a class="t" href="mitre-light.html">MITRE ATT&amp;CK</a><a class="t" href="design-system.html">Design system</a><div class="ft"><a class="lv" id="th" href="alerts-dark.html"><span aria-hidden="true" id="ti"></span><span id="tt"></span></a><button class="lv on" id="lv" aria-pressed="true"><i></i><span id="lt">Live</span></button></div></aside>
+<main id="m"></main>
+<aside id="dr" aria-label="Incident details" aria-hidden="true"></aside>
+<div id="toast" role="status"></div>
+<script>
+const SEV=['critical','high','medium','low','info'],IC={critical:'▲',high:'◆',medium:'●',low:'■',info:'○'};
+const ST={open:'Open',investigating:'Investigating',resolved:'Resolved',false_positive:'False positive'};
+const R=[['Brute force login attempts','high','Credential Access','T1110'],['Encoded PowerShell command','critical','Execution','T1059.001'],['New admin account created','high','Persistence','T1136'],['Port scan from external IP','medium','Discovery','T1046'],['Outbound beacon to rare host','critical','Command and Control','T1071'],['Large upload to unknown host','high','Exfiltration','T1048'],['Phishing link clicked','medium','Initial Access','T1566'],['Scheduled task modified','low','Persistence','T1053'],['RDP login from new country','high','Lateral Movement','T1021.001'],['Security log cleared','critical','Defense Evasion','T1070'],['DNS query to rare domain','low','Command and Control','T1071.004'],['User added to Domain Admins','high','Privilege Escalation','T1078'],['Scheduled vulnerability scan','info','Discovery','T1595']];
+const TAC=[...new Set(R.map(r=>r[2]))],HOSTS=['WEB-01','DB-02','HR-LAPTOP-14','DC-01','FIN-PC-07','VPN-GW'],SS=['open','open','investigating','resolved','false_positive','open'],CTRY=['Russia','China','Brazil','Germany','United States','Iran'];
+let seed=5;const rnd=n=>(seed=(seed*9301+49297)%233280)/233280*n|0;
+const ip=()=>`${[10,172,185,45][rnd(4)]}.${rnd(250)}.${rnd(250)}.${1+rnd(250)}`;
+let n=3100,A=[];
+function mk(min,st){const r=R[rnd(R.length)];return{id:'ALT-'+(n++),title:r[0],sev:r[1],tactic:r[2],tech:r[3],status:st||SS[rnd(SS.length)],host:HOSTS[rnd(6)],src:ip(),dst:ip(),port:[22,443,3389,445,53,8080][rnd(6)],pid:1000+rnd(8000),min,ctry:CTRY[rnd(6)]}}
+for(let i=0;i<48;i++)A.unshift(mk(i*15+rnd(10)));
+const $=s=>document.querySelector(s),cap=s=>s[0].toUpperCase()+s.slice(1),cnt=(k,v)=>A.filter(a=>a[k]===v).length;
+const ago=m=>m<1?'just now':m<60?m+' min ago':Math.floor(m/60)+' h ago',bd=s=>`<span class="bd s-${s}"><span aria-hidden="true">${IC[s]}</span>${cap(s)}</span>`;
+const tally=(k,x)=>Object.entries(A.reduce((o,a)=>(o[a[k]]=(o[a[k]]||0)+1,o),{})).sort((a,b)=>b[1]-a[1]).slice(0,x);
+function up(el,to){const t0=performance.now();(function f(t){const p=Math.min((t-t0)/1100,1);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));p<1&&requestAnimationFrame(f)})(t0)}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('s');setTimeout(()=>e.classList.remove('s'),2200)}
+function bind(r){r.querySelectorAll('[data-id]').forEach(e=>{e.onclick=()=>show(e.dataset.id);e.onkeydown=v=>v.key==='Enter'&&show(e.dataset.id)})}
+let cur;
+function show(id){cur=A.find(a=>a.id===id);const a=cur;
+$('#dr').innerHTML=`<button class="btn" id="x">Close</button><h3 class="d">${a.title}</h3>${bd(a.sev)} <span class="pl" style="color:var(--plum);border-color:var(--plum)">${ST[a.status]}</span>
+<dl><dt>Alert ID</dt><dd>${a.id}</dd><dt>Source IP</dt><dd>${a.src} (${a.ctry})</dd><dt>Destination</dt><dd>${a.dst}:${a.port}</dd><dt>Host</dt><dd>${a.host}</dd><dt>Process ID</dt><dd>${a.pid}</dd><dt>Tactic</dt><dd>${a.tactic}</dd><dt>Technique</dt><dd>${a.tech}</dd><dt>Detected</dt><dd>${ago(a.min)}</dd></dl>
+<div class="acts"><button class="btn p" id="esc">Escalate to supervisor</button><button class="btn" id="rs">Mark resolved</button><button class="btn" id="fp">False positive</button></div>`;
+$('#dr').classList.add('open');$('#dr').setAttribute('aria-hidden','false');$('#x').focus();
+$('#x').onclick=close;$('#esc').onclick=()=>set('investigating','Escalated to supervisor');$('#rs').onclick=()=>set('resolved','Marked resolved');$('#fp').onclick=()=>set('false_positive','Marked false positive')}
+function close(){$('#dr').classList.remove('open');$('#dr').setAttribute('aria-hidden','true')}
+function set(s,t){cur.status=s;toast(t);close();document.body.classList.add('na');render()}
+document.addEventListener('keydown',e=>e.key==='Escape'&&close());
+let th='light';
+function setTh(t){th=t;document.documentElement.dataset.theme=t;$('#ti').textContent=t==='dark'?'☀':'☾';$('#tt').textContent=t==='dark'?'Switch to light':'Switch to dark'}
+let timer;function tick(){A.forEach(x=>x.min+=1);const a=mk(0,'open');A.unshift(a);if($('#dr.open'))return;document.body.classList.add('na');onNew(a)}
+function live(on){$('#lv').classList.toggle('on',on);$('#lv').setAttribute('aria-pressed',on);$('#lt').textContent=on?'Live':'Paused';clearInterval(timer);if(on)timer=setInterval(tick,4500)}
+function init(hasLive){setTh(th);render();if(hasLive){$('#lv').onclick=()=>live(!$('#lv').classList.contains('on'));live(true)}}
+
+
+let fSev='',fSt='',fTc=new URLSearchParams(location.search).get('tactic')||'',q='';
+const row=a=>`<tr tabindex="0" data-id="${a.id}"><td>${bd(a.sev)}</td><td>${a.title}</td><td><span class="pl">${ST[a.status]}</span></td><td>${a.tech}</td><td>${a.tactic}</td><td>${a.host}</td><td style="color:var(--mau)">${ago(a.min)}</td></tr>`;
+function rt(){const L=A.filter(a=>(!fSev||a.sev===fSev)&&(!fSt||a.status===fSt)&&(!fTc||a.tactic===fTc)&&(!q||(a.title+a.host+a.tech).toLowerCase().includes(q)));
+$('#cn').textContent=L.length+' of '+A.length+' alerts shown. Select a row to investigate.';
+$('#tb').innerHTML=L.map(row).join('')||'<tr><td colspan="7" style="color:var(--mau)">Nothing matches. Clear a filter to see more alerts.</td></tr>';bind($('#tb'))}
+function render(){const sel=(id,v,o,all)=>`<select id="${id}" aria-label="${all}"><option value="">${all}</option>${o.map(x=>`<option value="${x[0]}" ${x[0]===v?'selected':''}>${x[1]}</option>`).join('')}</select>`;
+$('#m').innerHTML=`<div class="top"><h1 class="d">Alerts</h1><p id="cn"></p></div>
+<div class="fil"><input type="search" id="q" placeholder="Search alert, host or technique" aria-label="Search alerts" value="${q}">${sel('fs',fSev,SEV.map(s=>[s,cap(s)]),'All severities')}${sel('ft',fSt,Object.entries(ST),'All statuses')}${sel('fm',fTc,TAC.map(t=>[t,t]),'All tactics')}</div>
+<div class="wrap"><table><thead><tr><th>Severity</th><th>Alert</th><th>Status</th><th>Technique</th><th>Tactic</th><th>Host</th><th>Detected</th></tr></thead><tbody id="tb"></tbody></table></div>`;
+$('#q').oninput=e=>{q=e.target.value.toLowerCase();rt()};$('#fs').onchange=e=>{fSev=e.target.value;rt()};$('#ft').onchange=e=>{fSt=e.target.value;rt()};$('#fm').onchange=e=>{fTc=e.target.value;rt()};rt()}
+function onNew(a){rt();if(a.sev==='critical')toast('New critical: '+a.title)}
+
+init(true);
+</script>
+</body>
+</html>

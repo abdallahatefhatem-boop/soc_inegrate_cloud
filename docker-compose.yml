@@ -1,0 +1,73 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: soc-db
+    environment:
+      MYSQL_ROOT_PASSWORD: localdev
+      MYSQL_DATABASE: TestLog
+    ports:
+      - "3306:3306"
+    volumes:
+      - testlog-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  soc-ai:
+    build:
+      context: ./SOC-
+    container_name: soc-ai
+    env_file:
+      - ./SOC-/.env
+    environment:
+      BACKEND_API_URL: http://backend:8080
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      AI_REPORT_PROVIDER: ollama
+      OLLAMA_MODEL: qwen2.5:14b
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ./backend_Grad
+    container_name: soc-backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      DatabaseProvider: MySql
+      SOC_AI_URL: http://soc-ai:8000
+      CLIENT_ORIGINS: http://localhost:5173
+      ConnectionStrings__cs: "server=db;port=3306;user=root;password=localdev;database=TestLog;"
+    ports:
+      - "5086:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      soc-ai:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Grad_front
+    container_name: soc-frontend
+    environment:
+      VITE_DEV_HOST: 0.0.0.0
+      VITE_DEV_PROXY_TARGET: http://backend:8080
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  testlog-data:
+
